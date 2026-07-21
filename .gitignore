@@ -1,0 +1,25 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Django uploaded files
+media/
+backend/media/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment
+.env
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
