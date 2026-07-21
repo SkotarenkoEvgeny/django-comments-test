@@ -1,0 +1,63 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: django_ps_db_prod
+    env_file:
+      - .env
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: django_redis_prod
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    container_name: django_backend_prod
+    working_dir: /app
+    env_file:
+      - .env.production
+    volumes:
+      - static_data:/app/staticfiles
+      - media_data:/app/media
+    depends_on:
+      - db
+      - redis
+    command: >
+      daphne
+      -b 0.0.0.0
+      -p 8000
+      config.asgi:application
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: django_frontend_prod
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  celery:
+    build:
+      context: ./backend
+    container_name: django_celery_prod
+    working_dir: /app
+    env_file:
+      - .env.production
+    depends_on:
+      - db
+      - redis
+    command: celery -A config worker -l info
+    restart: unless-stopped
+
+volumes:
+  postgres_data_prod:
+  static_data:
+  media_data:
