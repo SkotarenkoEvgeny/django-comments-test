@@ -38,6 +38,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
     container_name: django_frontend_prod
+    volumes:
+      - static_data:/var/www/static:ro
+      - media_data:/var/www/media:ro
     ports:
       - "80:80"
     depends_on:

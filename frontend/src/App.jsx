@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
-const API_URL = "http://127.0.0.1:8000";
-const WS_URL = "ws://127.0.0.1:8000/ws/comments/";
+const API_URL = import.meta.env.VITE_API_URL;
+const WS_PROTOCOL =
+    window.location.protocol === "https:"
+        ? "wss:"
+        : "ws:";
+
+const WS_URL =
+    `${WS_PROTOCOL}//${window.location.host}/ws/comments/`;
 
 const PAGE_SIZE = 10;
 
 
-// ======================================================
-// Добавляем Reply в дерево комментариев
-// ======================================================
 
 function addReplyToTree(comments, newComment) {
     return comments.map((comment) => {
@@ -34,10 +37,6 @@ function addReplyToTree(comments, newComment) {
 }
 
 
-// ======================================================
-// Цвет аватара по имени пользователя
-// ======================================================
-
 function getAvatarClass(userName = "") {
     const classes = [
         "avatar--blue",
@@ -61,10 +60,6 @@ function getAvatarClass(userName = "") {
 }
 
 
-// ======================================================
-// Формат даты
-// ======================================================
-
 function formatDate(dateString) {
     return new Date(
         dateString
@@ -80,10 +75,6 @@ function formatDate(dateString) {
     );
 }
 
-
-// ======================================================
-// Компонент одного комментария
-// ======================================================
 
 function CommentItem({
     comment,
@@ -188,7 +179,7 @@ function CommentItem({
                 </div>
 
 
-                {/* Пока декоративный рейтинг */}
+                {/* temp rating */}
 
                 <div className="comment-rating">
 
@@ -478,10 +469,6 @@ function App() {
         });
 
 
-    // ==================================================
-    // СИНХРОНИЗИРУЕМ PAGE REF
-    // ==================================================
-
     useEffect(() => {
 
         pageRef.current =
@@ -489,10 +476,6 @@ function App() {
 
     }, [page]);
 
-
-    // ==================================================
-    // СИНХРОНИЗИРУЕМ ORDERING REF
-    // ==================================================
 
     useEffect(() => {
 
@@ -739,25 +722,9 @@ function App() {
                     data.comment;
 
 
-                // ==========================================
-                // НОВЫЙ КОРНЕВОЙ КОММЕНТАРИЙ
-                // ==========================================
-
                 if (
                     !newComment.parent
                 ) {
-
-
-                    // Не вставляем его вручную.
-                    //
-                    // Загружаем текущую страницу
-                    // заново с backend.
-                    //
-                    // Так сохраняется:
-                    //
-                    // - сортировка
-                    // - пагинация
-                    // - правильный count
 
 
                     loadComments(
