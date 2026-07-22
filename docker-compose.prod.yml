@@ -3,7 +3,7 @@ services:
     image: postgres:17-alpine
     container_name: django_ps_db_prod
     env_file:
-      - .env
+      - .env.production
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     restart: unless-stopped
